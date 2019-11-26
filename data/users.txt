@@ -1,0 +1,1 @@
+[{"id":1,"username":"xiaoming","password":"123456","avatar":"sj-1974066390.jpg","nickname":"小明要努力"},{"id":2,"username":"xiaohong","password":"123456","avatar":"23434543545645dsfaadsf.jpg","nickname":"红红最棒"},{"id":3,"username":"xiaoqiang","password":"123456","avatar":"adsfasfewr324324324dsfasf.jpg","nickname":"小强打不死"}]
