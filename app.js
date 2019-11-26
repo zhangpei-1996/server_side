@@ -203,16 +203,28 @@ app.get('/cut', (req, res) => {
 
 app.get('/allrw', (req, res)=>{
 	var page = url.parse(req.url, true).query.page;
-	var done = url.parse(req.url, true).query.done;
+	var type = url.parse(req.url, true).query.type;
+	var deadline = url.parse(req.url, true).query.deadline;
 
 	// 每页10条
 	fs.readFile('./data/rw.txt', (err, content) => {
 		var allarr = JSON.parse(content.toString());
 
-		if(done == 'true') {
+
+		// type1 进行中，type2已完成  type3 超期
+		if(type == '1') {
+			allarr = allarr.filter(item => !item.done &&  item.deadline >= Date.parse(new Date()));
+		}else if(type == '2'){
 			allarr = allarr.filter(item => item.done);
-		}else if(done == 'false'){
-			allarr = allarr.filter(item => !item.done);
+		}else if(type == '3'){
+			allarr = allarr.filter(item => !item.done && item.deadline < Date.parse(new Date()));
+		}
+
+
+		if(deadline){
+			var s = Number(deadline.match(/(\d+)to(\d+)/)[1]);
+			var e = Number(deadline.match(/(\d+)to(\d+)/)[2]);
+			allarr = allarr.filter(item => item.deadline >= s && item.deadline <= e)
 		}
 
 		// console.log(done)
@@ -242,6 +254,38 @@ app.get('/allrw', (req, res)=>{
 	})
 });
 
+app.get('/setdone', (req, res)=>{
+	var ids = url.parse(req.url, true).query.ids.split('v').map(item => Number(item));
+
+	console.log(ids);
+
+	// 每页10条
+	fs.readFile('./data/rw.txt', (err, content) => {
+		var allarr = JSON.parse(content.toString());
+
+		// 改变
+		allarr = allarr.map(item => {
+			console.log(item.id)
+			// console.log(item.id);
+			if(ids.includes(item.id)){
+				console.log('有')
+				return {
+					...item,
+					'done': true
+				};
+			}else{
+				return item;
+			}
+		});
+
+		// console.log(allarr);
+
+		// 重写
+		fs.writeFile('./data/rw.txt', JSON.stringify(allarr), (err) => {
+			 res.send('ok');
+		});
+	});
+});
 
 
 
